@@ -1,14 +1,18 @@
 namespace DotnetApi.Models
 {
-    public partial class User {
+    public partial class UserComplete {
         public int UserId {get; set;}
         public string FirstName {get; set;} //= "";
         public string LastName {get; set;} 
         public string Email {get; set;} 
         public string Gender {get; set;} 
         public bool Active {get; set;}
+        public string JobTitle {get; set;} //= "";
+        public string Department {get; set;}
+        public decimal Salary {get; set;}
+        public decimal AvgSalary {get; set;} 
 
-        public User() {
+        public UserComplete() {
             if (FirstName == null) {
                 FirstName = "";
             }
@@ -20,6 +24,12 @@ namespace DotnetApi.Models
             }
              if (Gender == null) {
                 Gender = "";
+            }
+             if (Department == null) {
+                Department = "";
+            }
+             if (JobTitle == null) {
+                JobTitle = "";
             }
         }
     }

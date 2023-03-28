@@ -7,12 +7,12 @@ namespace DotnetApi.Controllers;
 
 [ApiController] //attribute for class
 [Route("[controller]")]//route attribute
-public class UserController : ControllerBase
+public class UserCompleteController : ControllerBase
 {
   DataContextDapper _dapper;
   
 
-    public UserController(IConfiguration config)
+    public UserCompleteController(IConfiguration config)
     {
         _dapper = new DataContextDapper(config);
     }
@@ -21,20 +21,22 @@ public class UserController : ControllerBase
         return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
     }
 
-    [HttpGet("GetUsers")]
+    [HttpGet("GetUsers/{userId}/{isActive}")] //
     //public IEnumerable<User> GetUsers()
-    public IEnumerable<User> GetUsers()
+    public IEnumerable<UserComplete> GetUsers(int userId, bool isActive)
     {
-         string sql = @"
-          SELECT  [UserId]
-         , [FirstName]
-         , [LastName]
-         , [Email]
-         , [Gender]
-         , [Active]
-        FROM  TutorialAppSchema.Users;
-         ";
-         IEnumerable<User> users = _dapper.LoadData<User>(sql);
+         string sql = @"EXEC TutorialAppSchema.spUsers_Get";
+         string parameters = "";
+         if (userId != 0) {  
+         parameters += ", @UserId=" + userId.ToString();
+         } 
+          if (isActive) {  
+         parameters += ", @Active=" + isActive.ToString();
+         } 
+
+         sql += parameters.Substring(1);//(1, parameters.Length)
+
+         IEnumerable<UserComplete> users = _dapper.LoadData<UserComplete>(sql);
 
          return users;
 
@@ -47,24 +49,16 @@ public class UserController : ControllerBase
         })
         .ToArray();*/
     }
-    [HttpGet("GetSingleUsers/{userId}")]
+    /*[HttpGet("GetSingleUsers/{userId}")]
     //public IEnumerable<User> GetUsers()
     public User GetSingleUsers(int userId)
     {
-          string sql = @"
-          SELECT  [UserId]
-         , [FirstName]
-         , [LastName]
-         , [Email]
-         , [Gender]
-         , [Active]
-        FROM  TutorialAppSchema.Users
-        WHERE UserId = " + userId.ToString();
+          string sql = @"EXEC TutorialAppSchema.spUsers_Get  @UserId=" + userId.ToString();
          User user = _dapper.LoadDataSingle<User>(sql);
 
          return user;
 
-    }
+    }*/
 
     [HttpPut("EditUser")]
     //public IEnumerable<User> GetUsers()
@@ -127,7 +121,7 @@ public class UserController : ControllerBase
         throw new Exception("Faild to delete user");
 
     }
-    [HttpGet("UserSalary/{userId}")]
+    /*[HttpGet("UserSalary/{userId}")]
     //public IEnumerable<User> GetUsers()
     public IEnumerable<UserSalary> GetUserSalary(int userId) //RETURNS responce and tell what happen without necessarily returning
     {
@@ -142,7 +136,7 @@ public class UserController : ControllerBase
         }
         throw new Exception("Faild to delete user");*/
 
-    }
+    //}
     [HttpPost("UserSalary")]
     //public IEnumerable<User> GetUsers()
     public IActionResult PostUserSalary(UserSalary userSalaryForInsert) //RETURNS responce and tell what happen without necessarily returning
@@ -192,7 +186,7 @@ public class UserController : ControllerBase
         throw new Exception("Faild to delete user salary");
 
     }
-      [HttpGet("UserJobInfo/{userId}")]
+      /*[HttpGet("UserJobInfo/{userId}")]
     //public IEnumerable<User> GetUsers()
     public IEnumerable<UserJobInfo> GetUserJobInfo(int userId) //RETURNS responce and tell what happen without necessarily returning
     {
@@ -203,7 +197,7 @@ public class UserController : ControllerBase
          );
      
 
-    }
+    }*/
     [HttpPost("UserJobInfo")]
     //public IEnumerable<User> GetUsers()
     public IActionResult PostUserJobInfo(UserJobInfo UserJobInfoForInsert) //RETURNS responce and tell what happen without necessarily returning
